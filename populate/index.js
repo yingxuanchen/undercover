@@ -8,7 +8,7 @@ const language = "english";
 
 await connectDB();
 
-const rows = await readXlsxFile(fs.createReadStream("words.xlsx"));
+const rows = await readXlsxFile(fs.createReadStream("words.xlsx"), { sheet: language });
 
 // Card.dropCollection();
 
