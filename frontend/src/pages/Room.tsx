@@ -44,7 +44,7 @@ function Room() {
     antiCount: 1,
     blankCount: 0,
   });
-  const [chosenUserState, setChosenUserState] = useState("");
+  const [chosenUserState, setChosenUserState] = useState<number | null>(null);
 
   const [dialogPropsState, setDialogPropsState] = useState<AlertDialogProps>({ ...closedDialogArgs });
 
@@ -74,15 +74,15 @@ function Room() {
     const socket = io(backendUrl, { withCredentials: true });
     socket.on("room" + roomId, (data) => {
       dispatch({ room: data.room });
-      const user = data.room.users.find((user: User) => user.name === username);
-      if (user) {
-        dispatch({ user: user });
+      const roomUser = data.room.users.find((roomUser: User) => roomUser.name === username);
+      if (roomUser) {
+        dispatch({ user: roomUser });
       }
 
       if (data.userVotedOut !== undefined && data.userVotedOut !== null) {
         const usernameVotedOut = data.room.users[data.userVotedOut].name;
         setMessageState(`${usernameVotedOut} was voted out!`);
-        setChosenUserState("");
+        setChosenUserState(null);
       } else {
         setMessageState("");
       }
@@ -250,11 +250,11 @@ function Room() {
   };
 
   const handleChooseUser = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setChosenUserState(event.target.value.toString());
+    setChosenUserState(parseInt(event.target.value, 10));
   };
 
   const handleVote = () => {
-    if (!chosenUserState) {
+    if (chosenUserState === null) {
       return;
     }
 
@@ -389,7 +389,7 @@ function Room() {
           {room.currentTurn === "hostVoting" &&
             `There is a tie in votes among:
           ${room.users
-            .map((user) => user.name)
+            .map((roomUser) => roomUser.name)
             .filter((_name, index) => room.usersWithMostVotes.includes(index))
             .join(", ")}
           Please discuss and host will vote in the system`}
@@ -446,18 +446,18 @@ function Room() {
             <FormControl component="fieldset">
               <FormLabel component="legend">Users</FormLabel>
               <RadioGroup aria-label="users" name="users" value={chosenUserState} onChange={handleChooseUser}>
-                {room.users.map((user, index) => {
+                {room.users.map((roomUser, index) => {
                   return (
                     <FormControlLabel
                       key={index}
-                      value={index.toString()}
+                      value={index}
                       disabled={
-                        user.isOut ||
+                        roomUser.isOut ||
                         user.hasVoted ||
                         (room.currentTurn === "hostVoting" && !room.usersWithMostVotes.includes(index))
                       }
                       control={<Radio />}
-                      label={getUserString(user, index, room.currentTurn, username)}
+                      label={getUserString(roomUser, index, room.currentTurn, username)}
                     />
                   );
                 })}
