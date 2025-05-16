@@ -38,13 +38,15 @@ const store = new MongoDBStore({
   expires: oneDay,
 });
 
+const isProduction = process.env.NODE_ENV === "production";
+
 app.use(
   session({
     secret: "undercover",
     resave: false,
     saveUninitialized: false,
     store: store,
-    cookie: { httpOnly: true, maxAge: oneDay },
+    cookie: { httpOnly: true, maxAge: oneDay, secure: isProduction, sameSite: isProduction ? "none" : "lax" },
   })
 );
 
