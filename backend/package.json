@@ -1,0 +1,22 @@
+{
+  "name": "undercover",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "lemonz",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --env-file .env --inspect index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "compression": "^1.8.0",
+    "connect-mongodb-session": "^5.0.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "mongodb": "^6.16.0",
+    "socket.io": "^4.8.1"
+  }
+}

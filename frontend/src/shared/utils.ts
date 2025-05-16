@@ -1,0 +1,42 @@
+import type { User } from "./types";
+
+export const applyDrag = (arr: User[], dragResult: any) => {
+  const { removedIndex, addedIndex, payload } = dragResult;
+  if (removedIndex === null && addedIndex === null) return arr;
+
+  const result = [...arr];
+  let itemToAdd = payload;
+
+  if (removedIndex !== null) {
+    itemToAdd = result.splice(removedIndex, 1)[0];
+  }
+
+  if (addedIndex !== null) {
+    result.splice(addedIndex, 0, itemToAdd);
+  }
+
+  return result;
+};
+
+export const getUserString = (user: User, index: number, currentTurn: number | string, myUsername: string) => {
+  return (
+    user.name +
+    // (user.name === myUsername ? ' (Me)' : '') +
+    (user.isHost ? " (Host)" : "") +
+    (currentTurn === index ? " (Speaking)" : "") +
+    (currentTurn === "ended" ? " - " + user.card : "") +
+    (user.isOut ? " (Out)" : "") +
+    (currentTurn === "ended" && user.role === "anti" ? " (Undercover)" : "")
+  );
+};
+
+export const getMinMaxAntiBlank = (totalCount: number) => {
+  return {
+    minAnti: 1,
+    maxAnti: totalCount / 3,
+    minBlank: 0,
+    maxBlank: totalCount < 4 ? 0 : 1,
+  };
+};
+
+export const backendUrl = import.meta.env.DEV ? "http://localhost:3000" : "https://nezha-111c.onrender.com";

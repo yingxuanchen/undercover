@@ -1,0 +1,17 @@
+{
+  "name": "populate",
+  "version": "1.0.0",
+  "description": "insert words to db",
+  "license": "ISC",
+  "author": "lemonz",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --env-file .env index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "mongodb": "^6.16.0",
+    "read-excel-file": "^5.8.8"
+  }
+}
