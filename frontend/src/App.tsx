@@ -1,24 +1,21 @@
 import "./App.css";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import Room from "./pages/Room";
 import MainPage from "./pages/MainPage";
 import { SnackbarProvider } from "./stores/snackbarStore";
 import { GameStateProvider } from "./stores/gameStore";
 
-const router = createBrowserRouter(
-  [
-    { path: "/room", element: <Room /> },
-    { path: "/", element: <MainPage /> },
-    { path: "*", element: <Navigate to="/" replace /> },
-  ],
-  { basename: "/undercover" }
-);
-
 function App() {
   return (
     <SnackbarProvider>
       <GameStateProvider>
-        <RouterProvider router={router} />
+        <HashRouter>
+          <Routes>
+            <Route path="/room" element={<Room />} />
+            <Route path="/" element={<MainPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </HashRouter>
       </GameStateProvider>
     </SnackbarProvider>
   );

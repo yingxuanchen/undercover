@@ -35,7 +35,7 @@ const languages = [
 function Room() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { roomId, username } = location.state;
+  const { roomId, username } = location.state || {};
 
   const { state: gameState, dispatch } = useContext(gameStore);
   const { room, user } = gameState;
@@ -97,7 +97,7 @@ function Room() {
 
   useEffect(() => {
     if (!roomId || !username) {
-      return;
+      navigate("/", { replace: true });
     }
 
     setBackdropState(true);
