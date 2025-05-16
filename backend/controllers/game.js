@@ -2,6 +2,11 @@ import { Room } from "../models/room.js";
 import { Card } from "../models/card.js";
 import { getIO } from "../util/socket.js";
 
+export const checkServiceStatus = (req, res, next) => {
+  console.log("Service is running");
+  res.status(200).json({ message: "Service is running" });
+};
+
 export const checkSession = (req, res, next) => {
   const roomId = req.session.roomId;
   const username = req.session.username;

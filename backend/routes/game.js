@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  checkServiceStatus,
   checkSession,
   endGame,
   endTurn,
@@ -13,6 +14,8 @@ import {
 } from "../controllers/game.js";
 
 const router = express.Router();
+
+router.get("/status", checkServiceStatus);
 
 router.get("/check-session", checkSession);
 

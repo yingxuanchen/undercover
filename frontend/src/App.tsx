@@ -5,10 +5,13 @@ import MainPage from "./pages/MainPage";
 import { SnackbarProvider } from "./stores/snackbarStore";
 import { GameStateProvider } from "./stores/gameStore";
 
-const router = createBrowserRouter([
-  { path: "/room", element: <Room /> },
-  { path: "/", element: <MainPage /> },
-]);
+const router = createBrowserRouter(
+  [
+    { path: "/room", element: <Room /> },
+    { path: "/", element: <MainPage /> },
+  ],
+  { basename: "/undercover" }
+);
 
 function App() {
   return (

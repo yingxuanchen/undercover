@@ -18,7 +18,7 @@ export const applyDrag = (arr: User[], dragResult: any) => {
   return result;
 };
 
-export const getUserString = (user: User, index: number, currentTurn: number | string, myUsername: string) => {
+export const getUserString = (user: User, index: number, currentTurn: number | string, _myUsername: string) => {
   return (
     user.name +
     // (user.name === myUsername ? ' (Me)' : '') +
@@ -39,4 +39,4 @@ export const getMinMaxAntiBlank = (totalCount: number) => {
   };
 };
 
-export const backendUrl = import.meta.env.DEV ? "http://localhost:3000" : "https://nezha-111c.onrender.com";
+export const backendUrl = import.meta.env.DEV ? "http://localhost:3000" : "https://undercover-gwsk.onrender.com";
