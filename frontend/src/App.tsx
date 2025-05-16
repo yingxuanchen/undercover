@@ -1,5 +1,5 @@
 import "./App.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import Room from "./pages/Room";
 import MainPage from "./pages/MainPage";
 import { SnackbarProvider } from "./stores/snackbarStore";
@@ -9,6 +9,7 @@ const router = createBrowserRouter(
   [
     { path: "/room", element: <Room /> },
     { path: "/", element: <MainPage /> },
+    { path: "*", element: <Navigate to="/" replace /> },
   ],
   { basename: "/undercover" }
 );
