@@ -40,6 +40,17 @@ const store = new MongoDBStore({
 
 const isProduction = process.env.NODE_ENV === "production";
 
+console.log("env: ", process.env.NODE_ENV);
+
+const cookieOptions = {
+  httpOnly: true,
+  maxAge: oneDay,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+};
+
+console.log("cookie options: ", cookieOptions);
+
 app.use(
   session({
     secret: "undercover",
