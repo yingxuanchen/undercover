@@ -6,7 +6,7 @@ interface Props {
 }
 
 export default function WordCard({ word }: Props) {
-  const [cardState, setCardState] = useState(true);
+  const [cardState, setCardState] = useState(false);
 
   const handleTurnCard = () => {
     setCardState(!cardState);
@@ -15,7 +15,7 @@ export default function WordCard({ word }: Props) {
   return (
     <>
       <Card raised sx={{ width: "fit-content", margin: "auto", padding: "20px" }}>
-        {cardState ? word : "Your word is hidden"}
+        {cardState ? word : "Reveal your word"}
       </Card>
       <p></p>
       <Button variant="contained" onClick={handleTurnCard}>
