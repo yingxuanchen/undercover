@@ -30,7 +30,6 @@ export default function RoomInfo({ inputState, handleInputChange }: Props) {
             {user.isHost && !room.hasStarted ? (
               <TextField
                 type="number"
-                fullWidth
                 id="antiCount"
                 name="antiCount"
                 label="Undercover"
@@ -47,7 +46,6 @@ export default function RoomInfo({ inputState, handleInputChange }: Props) {
             {user.isHost && !room.hasStarted ? (
               <TextField
                 type="number"
-                fullWidth
                 id="blankCount"
                 name="blankCount"
                 label="Blank"

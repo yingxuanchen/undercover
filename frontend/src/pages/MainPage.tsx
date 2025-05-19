@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress, Grid, TextField, Button, Typography } from "@mui/material";
+import { Backdrop, CircularProgress, TextField, Button, Typography, Stack } from "@mui/material";
 import { useState, useEffect } from "react";
 import AlertDialog, { closedDialogArgs, type AlertDialogProps } from "../components/AlertDialog";
 import { useNavigate } from "react-router-dom";
@@ -96,33 +96,27 @@ function MainPage() {
         <CircularProgress color="inherit" />
       </Backdrop>
       <form onSubmit={handleEnterRoom}>
-        <Grid container spacing={3}>
-          <Grid size={12}>
-            <TextField
-              required
-              id="roomId"
-              name="roomId"
-              label="Room Id"
-              onChange={handleInputChange}
-              {...roomIdErrorState}
-            />
-          </Grid>
-          <Grid size={12}>
-            <TextField
-              required
-              id="username"
-              name="username"
-              label="Username"
-              onChange={handleInputChange}
-              {...usernameErrorState}
-            />
-          </Grid>
-          <Grid size={12}>
-            <Button variant="contained" color="primary" type="submit">
-              Enter Room
-            </Button>
-          </Grid>
-        </Grid>
+        <Stack spacing={3} alignItems="center">
+          <TextField
+            required
+            id="roomId"
+            name="roomId"
+            label="Room Id"
+            onChange={handleInputChange}
+            {...roomIdErrorState}
+          />
+          <TextField
+            required
+            id="username"
+            name="username"
+            label="Username"
+            onChange={handleInputChange}
+            {...usernameErrorState}
+          />
+          <Button variant="contained" color="primary" type="submit">
+            Enter Room
+          </Button>
+        </Stack>
       </form>
       <Typography variant="subtitle2" color="error" sx={{ marginTop: "1em", marginBottom: "1em" }}>
         Note: If you find that your game is not synchronized with other players at any point of time, please refresh
