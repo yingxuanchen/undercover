@@ -51,6 +51,8 @@ const cookieOptions = {
 
 console.log("cookie options: ", cookieOptions);
 
+app.set("trust proxy", 1);
+
 app.use(
   session({
     secret: "undercover",
