@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { gameStore } from "../stores/gameStore";
-import { Checkbox, FormControlLabel, Stack, Tooltip } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, Stack, Tooltip } from "@mui/material";
 import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
 import { getMinMaxAntiBlank } from "../shared/utils";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
@@ -81,7 +81,7 @@ export default function RoomInfo({ roleCounts, handleRoleCountsChange }: Props) 
   return (
     <Stack spacing={1}>
       <div>Room Id: {room.roomId}</div>
-      <div style={{ display: "flex", alignItems: "center" }}>
+      <div style={{ display: "flex" }}>
         <Tooltip
           title={
             <>
@@ -91,7 +91,9 @@ export default function RoomInfo({ roleCounts, handleRoleCountsChange }: Props) 
             </>
           }
         >
-          <HelpOutlineIcon fontSize="small" />
+          <Button>
+            <HelpOutlineIcon fontSize="small" />
+          </Button>
         </Tooltip>
         {roleList.map((role, i) => (
           <span key={i} style={{ display: "inline-block", margin: "0 5px" }}>
