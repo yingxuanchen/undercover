@@ -7,7 +7,7 @@ interface Props {
   handleEndTurn: () => void;
 }
 
-export default function UserList({ handleEndTurn }: Props) {
+export default function ActionBox({ handleEndTurn }: Props) {
   const { state: gameState } = useContext(gameStore);
   const { room, user } = gameState;
 

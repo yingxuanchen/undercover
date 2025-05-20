@@ -18,10 +18,9 @@ export const applyDrag = (arr: User[], dragResult: any) => {
   return result;
 };
 
-export const getUserString = (user: User, index: number, currentTurn: number | string, _myUsername: string) => {
+export const getUserString = (user: User, index: number, currentTurn: number | string) => {
   return (
     user.name +
-    // (user.name === myUsername ? ' (Me)' : '') +
     (user.isHost ? " (Host)" : "") +
     (currentTurn === index ? " (Speaking)" : "") +
     (currentTurn === "ended" ? " - " + user.card : "") +
@@ -33,7 +32,7 @@ export const getUserString = (user: User, index: number, currentTurn: number | s
 export const getMinMaxAntiBlank = (totalCount: number) => {
   return {
     minAnti: 1,
-    maxAnti: totalCount / 3,
+    maxAnti: Math.floor(totalCount / 3),
     minBlank: 0,
     maxBlank: totalCount < 4 ? 0 : 1,
   };

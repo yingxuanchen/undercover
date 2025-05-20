@@ -20,12 +20,12 @@ import {
   Stack,
 } from "@mui/material";
 import RoomInfo from "../components/RoomInfo";
-import WordCard from "../components/WordCard";
 import { io } from "socket.io-client";
 import type { User } from "../shared/types";
 import { backendUrl, getMinMaxAntiBlank, getUserString } from "../shared/utils";
 import UserList from "../components/UserList";
 import fetcher from "../shared/fetcher";
+import FlippingWordCard from "../components/FlippingWordCard";
 
 const languages = [
   { prop: "english", label: "English" },
@@ -40,7 +40,7 @@ function Room() {
   const { state: gameState, dispatch } = useContext(gameStore);
   const { room, user } = gameState;
 
-  const [inputState, setInputState] = useState({
+  const [roleCounts, setRoleCounts] = useState({
     antiCount: 1,
     blankCount: 0,
   });
@@ -114,10 +114,8 @@ function Room() {
       });
   }, [roomId, username, dispatch]);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value, 10) ? parseInt(event.target.value, 10) : 0;
-    const updatedInputState = { ...inputState, [event.target.name]: value };
-    setInputState(updatedInputState);
+  const handleRoleCountsChange = (antiCount: number, blankCount: number) => {
+    setRoleCounts({ antiCount: antiCount, blankCount: blankCount });
   };
 
   const handleChooseLanguage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -153,10 +151,10 @@ function Room() {
   const handleStartGame = () => {
     const { minAnti, maxAnti, minBlank, maxBlank } = getMinMaxAntiBlank(room.totalCount);
     if (
-      inputState.antiCount < minAnti ||
-      inputState.antiCount > maxAnti ||
-      inputState.blankCount < minBlank ||
-      inputState.blankCount > maxBlank
+      roleCounts.antiCount < minAnti ||
+      roleCounts.antiCount > maxAnti ||
+      roleCounts.blankCount < minBlank ||
+      roleCounts.blankCount > maxBlank
     ) {
       return;
     }
@@ -167,8 +165,8 @@ function Room() {
       .post(`/start-game`, {
         room: {
           roomId: roomId,
-          antiCount: inputState.antiCount,
-          blankCount: inputState.blankCount,
+          antiCount: roleCounts.antiCount,
+          blankCount: roleCounts.blankCount,
           users: room.users,
         },
         randomOrder: randomOrderState,
@@ -297,12 +295,6 @@ function Room() {
       });
   };
 
-  const getMinMaxAntiBlankMessage = () => {
-    const { minAnti, maxAnti, minBlank, maxBlank } = getMinMaxAntiBlank(room.totalCount);
-    return `Undercover: min ${minAnti}, max ${maxAnti}
-      Blank: min ${minBlank}, max ${maxBlank}`;
-  };
-
   const getVoteMessage = () => {
     if (room.currentTurn === "hostVoting") {
       return "";
@@ -352,9 +344,13 @@ function Room() {
           <CircularProgress color="inherit" />
         </Backdrop>
 
+        {room.hasStarted && <FlippingWordCard word={user.card} />}
+
         <Typography variant="h6">
           <Stack spacing={1} alignItems="center">
-            <RoomInfo inputState={inputState} handleInputChange={handleInputChange} />
+            <div style={{ marginTop: room.hasStarted ? "6rem" : "0rem" }}>
+              <RoomInfo roleCounts={roleCounts} handleRoleCountsChange={handleRoleCountsChange} />
+            </div>
 
             {!room.hasStarted && (
               <Button variant="contained" onClick={handleLeaveRoom}>
@@ -401,7 +397,7 @@ function Room() {
 
         {!room.hasStarted && (
           <Typography sx={{ whiteSpace: "pre-line" }} color="error">
-            {room.totalCount < 3 ? "Game must have at least 3 players" : getMinMaxAntiBlankMessage()}
+            {room.totalCount < 3 ? "Game must have at least 3 players" : ""}
           </Typography>
         )}
 
@@ -457,7 +453,7 @@ function Room() {
                         (room.currentTurn === "hostVoting" && !room.usersWithMostVotes.includes(index))
                       }
                       control={<Radio />}
-                      label={getUserString(roomUser, index, room.currentTurn, username)}
+                      label={getUserString(roomUser, index, room.currentTurn)}
                     />
                   );
                 })}
@@ -479,12 +475,10 @@ function Room() {
             <p></p>
           </>
         ) : !room.hasStarted && user.isHost && !randomOrderState ? (
-          <UserList username={username} handleEndTurn={handleEndTurn} />
+          <UserList handleEndTurn={handleEndTurn} />
         ) : room.users !== undefined ? (
-          <UserList username={username} handleEndTurn={handleEndTurn} />
+          <UserList handleEndTurn={handleEndTurn} />
         ) : null}
-
-        {room.hasStarted && <WordCard word={user.card} />}
 
         <AlertDialog
           open={dialogPropsState.open}
