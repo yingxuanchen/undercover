@@ -45,3 +45,7 @@
   z-index: 1201; /* MUI theme default z-index of drawer is 1200 */
   color: "#fff";
 }
+
+.MuiCardContent-root {
+  padding-bottom: 0 !important;
+}

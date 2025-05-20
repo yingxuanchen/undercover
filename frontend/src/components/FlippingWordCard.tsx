@@ -1,5 +1,6 @@
 import { Box, Card, CardContent, Typography } from "@mui/material";
 import { useState } from "react";
+import ThreeSixtyIcon from "@mui/icons-material/ThreeSixty";
 
 interface Props {
   word: string;
@@ -18,6 +19,7 @@ function WordCard({ word, front }: { word: string; front: boolean }) {
     >
       <CardContent>
         <Typography variant="h6">{front ? word : "Reveal word"}</Typography>
+        <ThreeSixtyIcon fontSize="small" />
       </CardContent>
     </Card>
   );

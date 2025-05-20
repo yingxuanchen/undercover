@@ -41,13 +41,16 @@ export default function RoomInfo({ roleCounts, handleRoleCountsChange }: Props) 
 
   useEffect(() => {
     const newColorList = [];
-    for (let i = 0; i < room.totalCount - antiCount - blankCount; i++) {
+    const thisAntiCount = room.hasStarted ? room.antiCount : antiCount;
+    const thisBlankCount = room.hasStarted ? room.blankCount : blankCount;
+
+    for (let i = 0; i < room.totalCount - thisAntiCount - thisBlankCount; i++) {
       newColorList.push(roles[RoleType.normal]);
     }
-    for (let i = 0; i < antiCount; i++) {
+    for (let i = 0; i < thisAntiCount; i++) {
       newColorList.push(roles[RoleType.anti]);
     }
-    for (let i = 0; i < blankCount; i++) {
+    for (let i = 0; i < thisBlankCount; i++) {
       newColorList.push(roles[RoleType.blank]);
     }
     setRoleList(newColorList);
@@ -60,6 +63,9 @@ export default function RoomInfo({ roleCounts, handleRoleCountsChange }: Props) 
   };
 
   const handleRoleChange = (role: Role) => {
+    if (room.hasStarted || !user.isHost) {
+      return;
+    }
     if (role === roles[RoleType.blank]) {
       return;
     }
