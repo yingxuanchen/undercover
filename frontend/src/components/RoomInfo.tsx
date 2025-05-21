@@ -89,8 +89,6 @@ export default function RoomInfo({ roleCounts, handleRoleCountsChange }: Props) 
 
   return (
     <Stack spacing={1} alignItems="center">
-      <div>Room Id: {room.roomId}</div>
-
       <div
         style={{
           display: "flex",

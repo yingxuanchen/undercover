@@ -18,6 +18,8 @@ import {
   RadioGroup,
   Radio,
   Stack,
+  Divider,
+  Chip,
 } from "@mui/material";
 import RoomInfo from "../components/RoomInfo";
 import { io } from "socket.io-client";
@@ -348,10 +350,6 @@ function Room() {
 
         <Typography variant="h6">
           <Stack spacing={1} alignItems="center">
-            <div style={{ marginTop: room.hasStarted ? "6rem" : "0rem" }}>
-              <RoomInfo roleCounts={roleCounts} handleRoleCountsChange={handleRoleCountsChange} />
-            </div>
-
             {!room.hasStarted && (
               <Button variant="contained" onClick={handleLeaveRoom}>
                 Leave Room
@@ -368,12 +366,12 @@ function Room() {
               </Button>
             )}
             {user.isHost && room.hasStarted && !(room.currentTurn === "ended") && (
-              <Button variant="contained" onClick={handleEndGame}>
+              <Button variant="contained" onClick={handleEndGame} style={{ marginTop: "6rem" }}>
                 End Game
               </Button>
             )}
             {user.isHost && room.currentTurn === "ended" && (
-              <Button variant="contained" onClick={handleLeaveGame}>
+              <Button variant="contained" onClick={handleLeaveGame} style={{ marginTop: "6rem" }}>
                 Leave Game
               </Button>
             )}
@@ -435,6 +433,14 @@ function Room() {
             </Grid> */}
           </Typography>
         )}
+
+        <Divider>
+          <Chip label={`Room Id: ${room.roomId}`} />
+        </Divider>
+        <div style={{ marginTop: "1rem" }}>
+          <RoomInfo roleCounts={roleCounts} handleRoleCountsChange={handleRoleCountsChange} />
+        </div>
+        <Divider />
 
         {room.hasStarted && (room.currentTurn === "voting" || room.currentTurn === "hostVoting") ? (
           <>

@@ -21,11 +21,12 @@ export const applyDrag = (arr: User[], dragResult: any) => {
 export const getUserString = (user: User, index: number, currentTurn: number | string) => {
   return (
     user.name +
-    (user.isHost ? " (Host)" : "") +
-    (currentTurn === index ? " (Speaking)" : "") +
+    (user.isHost ? " 👑" : "") +
+    (currentTurn === index ? " 🎙️" : "") +
     (currentTurn === "ended" ? " - " + user.card : "") +
     (user.isOut ? " (Out)" : "") +
-    (currentTurn === "ended" && user.role === "anti" ? " (Undercover)" : "")
+    (currentTurn === "ended" && user.role === "anti" ? " (Undercover)" : "") +
+    (currentTurn === "ended" && user.role === "blank" ? " (Blank)" : "")
   );
 };
 
