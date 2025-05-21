@@ -18,7 +18,7 @@ function WordCard({ word, front }: { word: string; front: boolean }) {
       }}
     >
       <CardContent>
-        <Typography variant="h6">{front ? word : "Reveal word"}</Typography>
+        <Typography variant="h6">{front ? "Reveal word" : word}</Typography>
         <ThreeSixtyIcon fontSize="small" />
       </CardContent>
     </Card>
