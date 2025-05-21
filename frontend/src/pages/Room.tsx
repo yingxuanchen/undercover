@@ -426,13 +426,13 @@ function Room() {
               </FormGroup>
               {languageError && <FormHelperText>Please choose at least 1 language</FormHelperText>}
             </FormControl>
-            <Grid container alignItems="center" justifyContent="center" spacing={1}>
+            {/* <Grid container alignItems="center" justifyContent="center" spacing={1}>
               <Grid>Follow Order</Grid>
               <Grid>
                 <Switch checked={randomOrderState} onChange={handleOrderSwitch} color="primary" />
               </Grid>
               <Grid>Random Order</Grid>
-            </Grid>
+            </Grid> */}
           </Typography>
         )}
 
