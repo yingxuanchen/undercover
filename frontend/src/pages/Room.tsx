@@ -446,6 +446,7 @@ function Room() {
                 sx={{ width: "10rem" }}
                 select
                 variant="standard"
+                size="small"
                 value={chosenUserState}
                 disabled={user.hasVoted}
                 onChange={handleChooseUser}

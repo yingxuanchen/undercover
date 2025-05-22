@@ -3,6 +3,7 @@ import { gameStore } from "../stores/gameStore";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
 import { roles, RoleType } from "../shared/types";
+import HowToVoteIcon from "@mui/icons-material/HowToVote";
 
 export default function UserList() {
   const { state: gameState } = useContext(gameStore);
@@ -20,6 +21,15 @@ export default function UserList() {
             <TableCell>{roomUser.isHost ? "👑" : ""}</TableCell>
             <TableCell>{roomUser.isOut ? <s>{roomUser.name}</s> : roomUser.name}</TableCell>
             <TableCell>{room.currentTurn === index ? "🎙️" : ""}</TableCell>
+            {room.currentTurn === "voting" && (
+              <TableCell>
+                {roomUser.hasVoted && (
+                  <span style={{ display: "flex" }}>
+                    <HowToVoteIcon fontSize="small" />
+                  </span>
+                )}
+              </TableCell>
+            )}
             {room.currentTurn === "ended" && (
               <>
                 <TableCell>{roomUser.card}</TableCell>
