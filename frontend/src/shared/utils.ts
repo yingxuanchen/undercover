@@ -20,14 +20,17 @@ export const applyDrag = (arr: User[], dragResult: any) => {
 
 export const getUserString = (user: User, index: number, currentTurn: number | string) => {
   return (
+    (user.isOut ? "☠️" : "") +
+    (user.isHost ? "👑" : "") +
     user.name +
-    (user.isHost ? " 👑" : "") +
-    (currentTurn === index ? " 🎙️" : "") +
-    (currentTurn === "ended" ? " - " + user.card : "") +
-    (user.isOut ? " (Out)" : "") +
-    (currentTurn === "ended" && user.role === "anti" ? " (Undercover)" : "") +
-    (currentTurn === "ended" && user.role === "blank" ? " (Blank)" : "")
+    (currentTurn === index ? "🎙️" : "") +
+    (currentTurn === "ended" ? " - " + user.card : "")
   );
+};
+
+export const getCurrentTurnUser = (users: User[], currentTurn: number): string => {
+  const currentUser = users[currentTurn];
+  return currentUser.name;
 };
 
 export const getMinMaxAntiBlank = (totalCount: number) => {

@@ -16,6 +16,25 @@ function App() {
         palette: {
           mode: prefersDarkMode ? "dark" : "light",
         },
+        components: {
+          MuiTableCell: {
+            styleOverrides: {
+              root: {
+                borderBottom: "none",
+                padding: "4px",
+              },
+            },
+          },
+          MuiCardContent: {
+            styleOverrides: {
+              root: {
+                ":last-child": {
+                  paddingBottom: "0px",
+                },
+              },
+            },
+          },
+        },
       }),
     [prefersDarkMode]
   );

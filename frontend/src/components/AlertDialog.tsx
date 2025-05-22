@@ -32,12 +32,8 @@ export default function AlertDialog({ open, onClose, title, message, onCancel, o
           <DialogContentText id="alert-dialog-description">{message}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          {onCancel && (
-            <Button onClick={onCancel} color="primary">
-              Cancel
-            </Button>
-          )}
-          <Button onClick={onConfirm} color="primary" autoFocus>
+          {onCancel && <Button onClick={onCancel}>Cancel</Button>}
+          <Button onClick={onConfirm} autoFocus>
             OK
           </Button>
         </DialogActions>

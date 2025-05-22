@@ -1,40 +1,45 @@
 import { useContext } from "react";
 import { gameStore } from "../stores/gameStore";
-import { Button, Stack, Grid, Typography } from "@mui/material";
-import { getUserString } from "../shared/utils";
+import { Table, TableBody, TableCell, TableRow } from "@mui/material";
+import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
+import { roles, RoleType } from "../shared/types";
 
-interface Props {
-  handleEndTurn: () => void;
-}
-
-export default function UserList({ handleEndTurn }: Props) {
+export default function UserList() {
   const { state: gameState } = useContext(gameStore);
-  const { room, user } = gameState;
+  const { room } = gameState;
 
-  if (!room || !user) {
+  if (!room) {
     return <>No data</>;
   }
 
   return (
-    <>
-      <h4>Players</h4>
-      <Stack spacing={2}>
+    // <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+    // <center>
+    <Table sx={{ margin: "0 auto", width: "auto" }}>
+      <TableBody>
         {room.users.map((roomUser, index) => (
-          <Grid container key={index} alignItems="center">
-            <Grid size="grow"></Grid>
-            <Grid size="auto">
-              <Typography>{getUserString(roomUser, index, room.currentTurn)}</Typography>
-            </Grid>
-            <Grid size="grow">
-              {roomUser.name === user.name && room.currentTurn === index && (
-                <Button variant="contained" color="primary" onClick={handleEndTurn}>
-                  End Turn
-                </Button>
-              )}
-            </Grid>
-          </Grid>
+          <TableRow key={index}>
+            <TableCell>
+              {roomUser.isHost ? "👑" : ""}
+              {/* {roomUser.isOut ? "☠️" : ""} */}
+            </TableCell>
+
+            <TableCell>{roomUser.isOut ? <s>{roomUser.name}</s> : roomUser.name}</TableCell>
+            {room.currentTurn === index && <TableCell>🎙️</TableCell>}
+
+            {room.currentTurn === "ended" && (
+              <>
+                <TableCell>{roomUser.card}</TableCell>
+                <TableCell>
+                  <AccessibilityNewIcon sx={{ color: roles[RoleType[roomUser.role]].color }} fontSize="small" />
+                </TableCell>
+              </>
+            )}
+          </TableRow>
         ))}
-      </Stack>
-    </>
+      </TableBody>
+    </Table>
+    // </center>
+    // </div>
   );
 }

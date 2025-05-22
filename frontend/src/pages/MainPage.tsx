@@ -113,7 +113,7 @@ function MainPage() {
             onChange={handleInputChange}
             {...usernameErrorState}
           />
-          <Button variant="contained" color="primary" type="submit">
+          <Button variant="contained" type="submit">
             Enter Room
           </Button>
         </Stack>

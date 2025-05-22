@@ -4,23 +4,7 @@ import { Button, Checkbox, ClickAwayListener, FormControlLabel, Stack, Tooltip }
 import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
 import { getMinMaxAntiBlank } from "../shared/utils";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-
-enum RoleType {
-  normal,
-  anti,
-  blank,
-}
-
-interface Role {
-  label: string;
-  color: string;
-}
-
-const roles: Record<RoleType, Role> = {
-  [RoleType.normal]: { label: "Civilian", color: "green" },
-  [RoleType.anti]: { label: "Undercover", color: "red" },
-  [RoleType.blank]: { label: "Blank", color: "gray" },
-};
+import { roles, RoleType, type Role } from "../shared/types";
 
 interface Props {
   roleCounts: { antiCount: number; blankCount: number };
@@ -46,7 +30,7 @@ export default function RoomInfo({ roleCounts, handleRoleCountsChange }: Props) 
     const thisBlankCount = room.hasStarted ? room.blankCount : blankCount;
 
     for (let i = 0; i < room.totalCount - thisAntiCount - thisBlankCount; i++) {
-      newColorList.push(roles[RoleType.normal]);
+      newColorList.push(roles[RoleType.norm]);
     }
     for (let i = 0; i < thisAntiCount; i++) {
       newColorList.push(roles[RoleType.anti]);
@@ -73,10 +57,10 @@ export default function RoomInfo({ roleCounts, handleRoleCountsChange }: Props) 
     if (role === roles[RoleType.anti] && antiCount <= 1) {
       return;
     }
-    if (role === roles[RoleType.normal] && antiCount >= getMinMaxAntiBlank(room.totalCount).maxAnti) {
+    if (role === roles[RoleType.norm] && antiCount >= getMinMaxAntiBlank(room.totalCount).maxAnti) {
       return;
     }
-    handleRoleCountsChange(role === roles[RoleType.normal] ? antiCount + 1 : antiCount - 1, blankCount);
+    handleRoleCountsChange(role === roles[RoleType.norm] ? antiCount + 1 : antiCount - 1, blankCount);
   };
 
   const handleTooltipClose = () => {
@@ -96,7 +80,7 @@ export default function RoomInfo({ roleCounts, handleRoleCountsChange }: Props) 
           overflow: "visible",
           alignItems: "center",
           justifyContent: "center",
-          gap: "10px 5px",
+          gap: "8px 10px",
         }}
       >
         {roleList.map((role, i) => (

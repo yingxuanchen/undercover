@@ -18,11 +18,13 @@ import {
   Stack,
   Divider,
   Chip,
+  TextField,
+  MenuItem,
 } from "@mui/material";
 import RoomInfo from "../components/RoomInfo";
 import { io } from "socket.io-client";
 import type { User } from "../shared/types";
-import { backendUrl, getMinMaxAntiBlank, getUserString } from "../shared/utils";
+import { backendUrl, getCurrentTurnUser, getMinMaxAntiBlank, getUserString } from "../shared/utils";
 import UserList from "../components/UserList";
 import fetcher from "../shared/fetcher";
 import FlippingWordCard from "../components/FlippingWordCard";
@@ -44,7 +46,7 @@ function Room() {
     antiCount: 1,
     blankCount: 0,
   });
-  const [chosenUserState, setChosenUserState] = useState<number | null>(null);
+  const [chosenUserState, setChosenUserState] = useState<number>(-1);
 
   const [dialogPropsState, setDialogPropsState] = useState<AlertDialogProps>({ ...closedDialogArgs });
 
@@ -82,7 +84,7 @@ function Room() {
       if (data.userVotedOut !== undefined && data.userVotedOut !== null) {
         const usernameVotedOut = data.room.users[data.userVotedOut].name;
         setMessageState(`${usernameVotedOut} was voted out!`);
-        setChosenUserState(null);
+        setChosenUserState(-1);
       } else {
         setMessageState("");
       }
@@ -252,7 +254,7 @@ function Room() {
   };
 
   const handleVote = () => {
-    if (chosenUserState === null) {
+    if (chosenUserState === -1) {
       return;
     }
 
@@ -295,22 +297,6 @@ function Room() {
       });
   };
 
-  const getVoteMessage = () => {
-    if (room.currentTurn === "hostVoting") {
-      return "";
-    }
-    if (user.isOut) {
-      return "You cannot vote because you are out";
-    }
-    if (user.hasVoted) {
-      return "Please wait for others to vote";
-    }
-    if (!chosenUserState) {
-      return "Please choose a user";
-    }
-    return "";
-  };
-
   const getWinnerMessage = (winner: string | number) => {
     if (winner === undefined) {
       return "There is no winner as the game was ended prematurely.";
@@ -339,133 +325,131 @@ function Room() {
   return (
     room &&
     user && (
-      <div>
+      <>
         <Backdrop className="backdrop" open={backdropState}>
           <CircularProgress color="inherit" />
         </Backdrop>
 
         {room.hasStarted && <FlippingWordCard word={user.card} />}
 
-        <Typography variant="h6">
-          <Stack spacing={1} alignItems="center">
-            {!room.hasStarted && (
-              <Button variant="contained" onClick={handleLeaveRoom}>
-                Leave Room
-              </Button>
-            )}
-            {user.isHost && !room.hasStarted && (
+        <Stack spacing={1} alignItems="center" sx={{ marginTop: room.hasStarted ? "6rem" : 0 }}>
+          {!room.hasStarted && (
+            <Button variant="outlined" onClick={handleLeaveRoom}>
+              Leave Room
+            </Button>
+          )}
+
+          {!room.hasStarted && user.isHost && (
+            <>
+              <FormControl error={languageError} component="fieldset">
+                <FormLabel component="legend">Language: </FormLabel>
+                <FormGroup sx={{ flexDirection: "initial" }}>
+                  {languages.map((lang) => {
+                    return (
+                      <FormControlLabel
+                        key={lang.prop}
+                        control={
+                          <Checkbox
+                            checked={languageState.includes(lang.prop)}
+                            onChange={handleChooseLanguage}
+                            name={lang.prop}
+                          />
+                        }
+                        label={lang.label}
+                      />
+                    );
+                  })}
+                </FormGroup>
+              </FormControl>
+              {/* <Grid container alignItems="center" justifyContent="center" spacing={1}>
+              <Grid>Follow Order</Grid>
+              <Grid>
+                <Switch checked={randomOrderState} onChange={handleOrderSwitch} />
+              </Grid>
+              <Grid>Random Order</Grid>
+            </Grid> */}
               <Button
                 variant="contained"
-                color="primary"
                 onClick={handleStartGame}
                 disabled={room.totalCount < 3 || languageError ? true : false}
               >
                 Start Game
               </Button>
-            )}
-            {user.isHost && room.hasStarted && !(room.currentTurn === "ended") && (
-              <Button variant="contained" onClick={handleEndGame} style={{ marginTop: "6rem" }}>
-                End Game
-              </Button>
-            )}
-            {user.isHost && room.currentTurn === "ended" && (
-              <Button variant="contained" onClick={handleLeaveGame} style={{ marginTop: "6rem" }}>
-                Leave Game
-              </Button>
-            )}
-          </Stack>
-        </Typography>
+            </>
+          )}
 
-        <Typography variant="h6" color="primary" sx={{ whiteSpace: "pre-line" }}>
-          {!room.hasStarted && !user.isHost && room.totalCount >= 3 && `Waiting for host to start game...`}
-          {room.currentTurn === "hostVoting" &&
-            `There is a tie in votes among:
+          {room.hasStarted && room.currentTurn !== "ended" && user.isHost && (
+            <Button variant="outlined" onClick={handleEndGame}>
+              End Game
+            </Button>
+          )}
+
+          {room.currentTurn === "ended" && user.isHost && (
+            <Button variant="contained" onClick={handleLeaveGame}>
+              Leave Game
+            </Button>
+          )}
+
+          <Typography variant="body1" color="secondary" sx={{ whiteSpace: "pre-line" }}>
+            {!room.hasStarted && !user.isHost && room.totalCount >= 3 && `Waiting for host to start game...`}
+            {!room.hasStarted && room.totalCount < 3 ? "Need at least 3 players to start game" : ""}
+            {room.currentTurn === "hostVoting" &&
+              `There is a tie in votes among:
           ${room.users
             .map((roomUser) => roomUser.name)
             .filter((_name, index) => room.usersWithMostVotes.includes(index))
             .join(", ")}
           Please discuss and host will vote in the system`}
-          {messageState ? messageState + "\n" : ""}
-          {room.currentTurn === "ended" &&
-            `Game has ended!
+            {messageState ? messageState + "\n" : ""}
+            {room.currentTurn === "ended" &&
+              `Game has ended!
           ${getWinnerMessage(room.winner)}`}
-        </Typography>
-
-        {!room.hasStarted && (
-          <Typography sx={{ whiteSpace: "pre-line" }} color="error">
-            {room.totalCount < 3 ? "Game must have at least 3 players" : ""}
           </Typography>
-        )}
 
-        {!room.hasStarted && user.isHost && (
-          <Typography component="div">
-            <p></p>
-            <FormControl error={languageError} component="fieldset">
-              <FormLabel component="legend">Language: </FormLabel>
-              <FormGroup sx={{ flexDirection: "initial" }}>
-                {languages.map((lang) => {
-                  return (
-                    <FormControlLabel
-                      key={lang.prop}
-                      control={
-                        <Checkbox
-                          checked={languageState.includes(lang.prop)}
-                          onChange={handleChooseLanguage}
-                          name={lang.prop}
-                          color="primary"
-                        />
-                      }
-                      label={lang.label}
-                    />
-                  );
-                })}
-              </FormGroup>
-              {languageError && <FormHelperText>Please choose at least 1 language</FormHelperText>}
-            </FormControl>
-            {/* <Grid container alignItems="center" justifyContent="center" spacing={1}>
-              <Grid>Follow Order</Grid>
-              <Grid>
-                <Switch checked={randomOrderState} onChange={handleOrderSwitch} color="primary" />
-              </Grid>
-              <Grid>Random Order</Grid>
-            </Grid> */}
-          </Typography>
-        )}
+          {typeof room.currentTurn === "number" && (
+            <>
+              <div>Current turn: {getCurrentTurnUser(room.users, room.currentTurn)}</div>
+              <Button
+                variant="contained"
+                onClick={handleEndTurn}
+                disabled={room.users[room.currentTurn].name !== user.name}
+              >
+                End Turn
+              </Button>
+            </>
+          )}
 
-        <Divider>
-          <Chip label={`Room Id: ${room.roomId}`} />
-        </Divider>
-        <div style={{ marginTop: "1rem" }}>
-          <RoomInfo roleCounts={roleCounts} handleRoleCountsChange={handleRoleCountsChange} />
-        </div>
-        <Divider />
-
-        {room.hasStarted && (room.currentTurn === "voting" || room.currentTurn === "hostVoting") ? (
-          <>
-            <br />
-            <FormControl component="fieldset">
-              <FormLabel component="legend">Users</FormLabel>
-              <RadioGroup aria-label="users" name="users" value={chosenUserState} onChange={handleChooseUser}>
+          {(room.currentTurn === "voting" || room.currentTurn === "hostVoting") && (
+            <>
+              <div>Current turn: Voting</div>
+              <TextField
+                sx={{ width: "10rem" }}
+                select
+                variant="standard"
+                value={chosenUserState}
+                disabled={user.hasVoted}
+                onChange={handleChooseUser}
+              >
+                <MenuItem value={-1} disabled>
+                  Choose a bad guy
+                </MenuItem>
                 {room.users.map((roomUser, index) => {
                   return (
-                    <FormControlLabel
+                    <MenuItem
                       key={index}
                       value={index}
                       disabled={
                         roomUser.isOut ||
-                        user.hasVoted ||
                         (room.currentTurn === "hostVoting" && !room.usersWithMostVotes.includes(index))
                       }
-                      control={<Radio />}
-                      label={getUserString(roomUser, index, room.currentTurn)}
-                    />
+                    >
+                      {roomUser.name}
+                    </MenuItem>
                   );
                 })}
-              </RadioGroup>
-              <FormHelperText>{getVoteMessage()}</FormHelperText>
+              </TextField>
               <Button
                 variant="contained"
-                color="primary"
                 disabled={
                   (room.currentTurn === "hostVoting" && !user.isHost) ||
                   (room.currentTurn === "voting" && user.isOut) ||
@@ -475,14 +459,22 @@ function Room() {
               >
                 Vote
               </Button>
-            </FormControl>
-            <p></p>
-          </>
-        ) : !room.hasStarted && user.isHost && !randomOrderState ? (
-          <UserList handleEndTurn={handleEndTurn} />
-        ) : room.users !== undefined ? (
-          <UserList handleEndTurn={handleEndTurn} />
-        ) : null}
+            </>
+          )}
+        </Stack>
+
+        <Divider sx={{ marginTop: "1rem", marginBottom: "1rem" }}>
+          <Chip label={`Room Id: ${room.roomId}`} />
+        </Divider>
+        <div>
+          <RoomInfo roleCounts={roleCounts} handleRoleCountsChange={handleRoleCountsChange} />
+        </div>
+
+        <Divider sx={{ marginTop: "1rem", marginBottom: "1rem" }}>
+          <Chip label={`Players`} />
+        </Divider>
+
+        <UserList />
 
         <AlertDialog
           open={dialogPropsState.open}
@@ -492,7 +484,7 @@ function Room() {
           onCancel={dialogPropsState.onCancel}
           onConfirm={dialogPropsState.onConfirm}
         />
-      </div>
+      </>
     )
   );
 }
