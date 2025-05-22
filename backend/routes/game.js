@@ -20,14 +20,14 @@ router.get("/status", checkServiceStatus);
 router.get("/check-session", checkSession);
 
 router.post("/enter-room", enterRoom);
-router.post("/leave-room", leaveRoom);
-router.post("/room", getRoom);
+router.get("/leave-room", leaveRoom);
+router.get("/room", getRoom);
 
 router.post("/start-game", startGame);
-router.post("/end-game", endGame);
-router.post("/leave-game", leaveGame);
+router.get("/end-game", endGame);
+router.get("/leave-game", leaveGame);
 
-router.post("/end-turn", endTurn);
+router.get("/end-turn", endTurn);
 router.post("/vote", vote, endGame);
 router.post("/host-vote", hostVote, endGame);
 

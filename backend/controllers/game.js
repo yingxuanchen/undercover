@@ -74,8 +74,8 @@ export const enterRoom = (req, res, next) => {
 };
 
 export const leaveRoom = (req, res, next) => {
-  const roomId = req.body.roomId;
-  const username = req.body.username;
+  const roomId = req.session.roomId;
+  const username = req.session.username;
 
   Room.findByRoomId(roomId)
     .then((room) => {
@@ -111,8 +111,8 @@ export const leaveRoom = (req, res, next) => {
 };
 
 export const getRoom = (req, res, next) => {
-  const roomId = req.body.roomId;
-  const username = req.body.username;
+  const roomId = req.session.roomId;
+  const username = req.session.username;
 
   Room.findByRoomId(roomId)
     .then((room) => {
@@ -126,12 +126,13 @@ export const getRoom = (req, res, next) => {
 };
 
 export const startGame = (req, res, next) => {
+  const roomId = req.session.roomId;
   const room = req.body.room;
   const randomOrder = req.body.randomOrder;
   const languageArray = req.body.languageArray;
   let updatedRoom;
 
-  Room.findByRoomId(room.roomId)
+  Room.findByRoomId(roomId)
     .then((oldRoom) => {
       if (!oldRoom) {
         res.status(400).json({ error: "room does not exist" });
@@ -190,7 +191,11 @@ export const startGame = (req, res, next) => {
 };
 
 export const endGame = (req, res, next) => {
-  const roomId = req.body.roomId;
+  const roomId = req.session.roomId;
+
+  if (!req.body) {
+    req.body = {};
+  }
 
   Room.findByRoomId(roomId)
     .then((room) => {
@@ -218,7 +223,7 @@ export const endGame = (req, res, next) => {
 };
 
 export const leaveGame = (req, res, next) => {
-  const roomId = req.body.roomId;
+  const roomId = req.session.roomId;
 
   Room.findByRoomId(roomId)
     .then((room) => {
@@ -250,7 +255,7 @@ export const leaveGame = (req, res, next) => {
 };
 
 export const endTurn = (req, res, next) => {
-  const roomId = req.body.roomId;
+  const roomId = req.session.roomId;
 
   Room.findByRoomId(roomId)
     .then((room) => {
@@ -278,8 +283,8 @@ export const endTurn = (req, res, next) => {
 };
 
 export const vote = (req, res, next) => {
-  const roomId = req.body.roomId;
-  const username = req.body.username;
+  const roomId = req.session.roomId;
+  const username = req.session.username;
   const chosenUser = req.body.chosenUser;
   let userVotedOut = null;
 
@@ -348,7 +353,7 @@ export const vote = (req, res, next) => {
 };
 
 export const hostVote = (req, res, next) => {
-  const roomId = req.body.roomId;
+  const roomId = req.session.roomId;
   const chosenUser = req.body.chosenUser;
 
   Room.findByRoomId(roomId)

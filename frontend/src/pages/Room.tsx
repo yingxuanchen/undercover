@@ -102,7 +102,7 @@ function Room() {
     setBackdropState(true);
 
     fetcher
-      .post(`/room`, { roomId: roomId, username: username })
+      .get(`/room`)
       .then((res) => {
         setBackdropState(false);
         dispatch({ room: res.data.room, user: res.data.user });
@@ -133,7 +133,7 @@ function Room() {
     setBackdropState(true);
 
     fetcher
-      .post(`/leave-room`, { roomId: roomId, username: username })
+      .get(`/leave-room`)
       .then((_res) => {
         return navigate("/", { replace: true });
       })
@@ -163,7 +163,6 @@ function Room() {
     fetcher
       .post(`/start-game`, {
         room: {
-          roomId: roomId,
           antiCount: roleCounts.antiCount,
           blankCount: roleCounts.blankCount,
           users: room.users,
@@ -196,7 +195,7 @@ function Room() {
     setBackdropState(true);
 
     fetcher
-      .post(`/end-game`, { roomId: roomId })
+      .get(`/end-game`)
       .then((_res) => {
         setBackdropState(false);
       })
@@ -222,7 +221,7 @@ function Room() {
     setBackdropState(true);
 
     fetcher
-      .post(`/leave-game`, { roomId: roomId })
+      .get(`/leave-game`)
       .then((_res) => {
         setBackdropState(false);
       })
@@ -236,7 +235,7 @@ function Room() {
     setBackdropState(true);
 
     fetcher
-      .post(`/end-turn`, { roomId: roomId })
+      .get(`/end-turn`)
       .then((_res) => {
         setBackdropState(false);
       })
@@ -268,7 +267,7 @@ function Room() {
       setBackdropState(true);
 
       fetcher
-        .post(`/vote`, { roomId: roomId, username: username, chosenUser: chosenUserState })
+        .post(`/vote`, { chosenUser: chosenUserState })
         .then((_res) => {
           setBackdropState(false);
         })
@@ -284,7 +283,7 @@ function Room() {
     setBackdropState(true);
 
     fetcher
-      .post(`/host-vote`, { roomId: roomId, chosenUser: chosenUserState })
+      .post(`/host-vote`, { chosenUser: chosenUserState })
       .then((_res) => {
         setBackdropState(false);
       })
