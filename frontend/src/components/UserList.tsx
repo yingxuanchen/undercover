@@ -13,25 +13,20 @@ export default function UserList() {
   }
 
   return (
-    // <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-    // <center>
     <Table sx={{ margin: "0 auto", width: "auto" }}>
       <TableBody>
         {room.users.map((roomUser, index) => (
           <TableRow key={index}>
-            <TableCell>
-              {roomUser.isHost ? "👑" : ""}
-              {/* {roomUser.isOut ? "☠️" : ""} */}
-            </TableCell>
-
+            <TableCell>{roomUser.isHost ? "👑" : ""}</TableCell>
             <TableCell>{roomUser.isOut ? <s>{roomUser.name}</s> : roomUser.name}</TableCell>
-            {room.currentTurn === index && <TableCell>🎙️</TableCell>}
-
+            <TableCell>{room.currentTurn === index ? "🎙️" : ""}</TableCell>
             {room.currentTurn === "ended" && (
               <>
                 <TableCell>{roomUser.card}</TableCell>
                 <TableCell>
-                  <AccessibilityNewIcon sx={{ color: roles[RoleType[roomUser.role]].color }} fontSize="small" />
+                  <span style={{ display: "flex" }}>
+                    <AccessibilityNewIcon sx={{ color: roles[RoleType[roomUser.role]].color }} fontSize="small" />
+                  </span>
                 </TableCell>
               </>
             )}
@@ -39,7 +34,5 @@ export default function UserList() {
         ))}
       </TableBody>
     </Table>
-    // </center>
-    // </div>
   );
 }

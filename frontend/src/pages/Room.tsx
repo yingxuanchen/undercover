@@ -47,7 +47,7 @@ function Room() {
 
   const [dialogPropsState, setDialogPropsState] = useState<AlertDialogProps>({ ...closedDialogArgs });
 
-  const [messageState, setMessageState] = useState("");
+  const [votedOutMessageState, setVotedOutMessageState] = useState("");
   const [randomOrderState, _setRandomOrderState] = useState(false);
   const [languageState, setLanguageState] = useState(languages.map((el) => el.prop));
   const [backdropState, setBackdropState] = useState(false);
@@ -80,10 +80,10 @@ function Room() {
 
       if (data.userVotedOut !== undefined && data.userVotedOut !== null) {
         const usernameVotedOut = data.room.users[data.userVotedOut].name;
-        setMessageState(`${usernameVotedOut} was voted out!`);
+        setVotedOutMessageState(`${usernameVotedOut} was voted out!`);
         setChosenUserState(-1);
       } else {
-        setMessageState("");
+        setVotedOutMessageState("");
       }
     });
 
@@ -294,7 +294,37 @@ function Room() {
       });
   };
 
-  const getWinnerMessage = (winner: string | number) => {
+  const getMessage = (): string => {
+    let message = "";
+
+    if (!room.hasStarted) {
+      if (room.totalCount < 3) {
+        message = "Need at least 3 players to start game";
+      }
+      if (!user.isHost && room.totalCount >= 3) {
+        message = "Waiting for host to start game...";
+      }
+    } else if (room.currentTurn === "hostVoting") {
+      message = `There is a tie in votes among:
+          ${room.users
+            .filter((_user, index) => room.usersWithMostVotes.includes(index))
+            .map((roomUser) => roomUser.name)
+            .join(", ")}
+          Please discuss and host will vote in the system`;
+    } else {
+      if (votedOutMessageState) {
+        message = votedOutMessageState + "\n";
+      }
+      if (room.currentTurn === "ended") {
+        message += `Game has ended!
+          ${getWinnerMessage(room.winner)}`;
+      }
+    }
+
+    return message;
+  };
+
+  const getWinnerMessage = (winner: string | number): string => {
     if (winner === undefined) {
       return "There is no winner as the game was ended prematurely.";
     }
@@ -329,7 +359,7 @@ function Room() {
 
         {room.hasStarted && <FlippingWordCard word={user.card} />}
 
-        <Stack spacing={1} alignItems="center" sx={{ marginTop: room.hasStarted ? "6rem" : 0 }}>
+        <Stack spacing={2} alignItems="center" sx={{ marginTop: room.hasStarted ? "6rem" : 0 }}>
           {!room.hasStarted && (
             <Button variant="outlined" onClick={handleLeaveRoom}>
               Leave Room
@@ -387,38 +417,31 @@ function Room() {
             </Button>
           )}
 
-          <Typography variant="body1" color="secondary" sx={{ whiteSpace: "pre-line" }}>
-            {!room.hasStarted && !user.isHost && room.totalCount >= 3 && `Waiting for host to start game...`}
-            {!room.hasStarted && room.totalCount < 3 ? "Need at least 3 players to start game" : ""}
-            {room.currentTurn === "hostVoting" &&
-              `There is a tie in votes among:
-          ${room.users
-            .map((roomUser) => roomUser.name)
-            .filter((_name, index) => room.usersWithMostVotes.includes(index))
-            .join(", ")}
-          Please discuss and host will vote in the system`}
-            {messageState ? messageState + "\n" : ""}
-            {room.currentTurn === "ended" &&
-              `Game has ended!
-          ${getWinnerMessage(room.winner)}`}
-          </Typography>
+          {getMessage() && (
+            <Typography variant="body1" color="secondary" sx={{ whiteSpace: "pre-line" }}>
+              {getMessage()}
+            </Typography>
+          )}
 
           {typeof room.currentTurn === "number" && (
-            <>
-              <div>Current turn: {getCurrentTurnUser(room.users, room.currentTurn)}</div>
-              <Button
-                variant="contained"
-                onClick={handleEndTurn}
-                disabled={room.users[room.currentTurn].name !== user.name}
-              >
-                End Turn
-              </Button>
-            </>
+            <Button
+              variant="contained"
+              onClick={handleEndTurn}
+              disabled={room.users[room.currentTurn].name !== user.name}
+              sx={{
+                textTransform: "none",
+                "&.Mui-disabled": { color: "secondary.contrastText", backgroundColor: "secondary.main" },
+              }}
+            >
+              {room.users[room.currentTurn].name !== user.name
+                ? `${getCurrentTurnUser(room.users, room.currentTurn)} is speaking`
+                : "END TURN"}
+            </Button>
           )}
 
           {(room.currentTurn === "voting" || room.currentTurn === "hostVoting") && (
             <>
-              <div>Current turn: Voting</div>
+              <div>Voting time!</div>
               <TextField
                 sx={{ width: "10rem" }}
                 select
@@ -428,7 +451,7 @@ function Room() {
                 onChange={handleChooseUser}
               >
                 <MenuItem value={-1} disabled>
-                  Choose a bad guy
+                  Who's bad?
                 </MenuItem>
                 {room.users.map((roomUser, index) => {
                   return (
@@ -463,6 +486,7 @@ function Room() {
         <Divider sx={{ marginTop: "1rem", marginBottom: "1rem" }}>
           <Chip label={`Room Id: ${room.roomId}`} />
         </Divider>
+
         <div>
           <RoomInfo roleCounts={roleCounts} handleRoleCountsChange={handleRoleCountsChange} />
         </div>

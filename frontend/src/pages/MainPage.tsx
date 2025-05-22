@@ -41,7 +41,22 @@ function MainPage() {
   }, []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedInputState = { ...inputState, [event.target.name]: event.target.value };
+    const { name, value } = event.target;
+
+    if (value.trim() === "") {
+      if (name === "roomId") {
+        setRoomIdErrorState({ error: true, helperText: "Room Id cannot be blank" });
+      }
+      if (name === "username") {
+        setUsernameErrorState({ error: true, helperText: "Username cannot be blank" });
+      }
+      return;
+    }
+
+    setRoomIdErrorState({ error: false, helperText: "" });
+    setUsernameErrorState({ error: false, helperText: "" });
+
+    const updatedInputState = { ...inputState, [name]: value };
     setInputState(updatedInputState);
   };
 
@@ -64,12 +79,12 @@ function MainPage() {
         if (error === "game has started") {
           setRoomIdErrorState({
             error: true,
-            helperText: "Game has started in this room. Please choose another room.",
+            helperText: "Game has started in this room",
           });
         } else if (error === "username already exists") {
           setUsernameErrorState({
             error: true,
-            helperText: "Username already exists in this room. Please choose another username.",
+            helperText: "Username already exists in this room",
           });
         }
       });
@@ -136,10 +151,10 @@ function MainPage() {
             cannot repeat what have been said before.
           </li>
           <li>
-            After every player has spoken, each player will vote for the player that he/she thinks is an Undercover. The
-            player with the most votes will be out of the game. If there is a tie, the players in the tie will describe
-            their word again (with new description) and everyone will decide again who to vote for. The host of the game
-            will do the voting in the system.
+            After every player has spoken, each player will vote for the player that he/she thinks is an
+            Undercover/Blank. The player with the most votes will be out of the game. If there is a tie, the players in
+            the tie will describe their word again (with new description) and everyone will decide again who to vote
+            for. The host of the game will do the voting in the system.
           </li>
           <li>
             At the end of each round,
