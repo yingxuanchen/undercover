@@ -6,7 +6,6 @@ import {
   Backdrop,
   CircularProgress,
   Typography,
-  Grid,
   Button,
   FormControl,
   FormLabel,
@@ -14,7 +13,6 @@ import {
   FormControlLabel,
   Checkbox,
   FormHelperText,
-  Switch,
   RadioGroup,
   Radio,
   Stack,
@@ -128,9 +126,9 @@ function Room() {
     }
   };
 
-  const handleOrderSwitch = () => {
-    setRandomOrderState(!randomOrderState);
-  };
+  // const handleOrderSwitch = () => {
+  //   setRandomOrderState(!randomOrderState);
+  // };
 
   const handleLeaveRoom = () => {
     setBackdropState(true);
