@@ -49,7 +49,7 @@ function Room() {
   const [dialogPropsState, setDialogPropsState] = useState<AlertDialogProps>({ ...closedDialogArgs });
 
   const [messageState, setMessageState] = useState("");
-  const [randomOrderState, setRandomOrderState] = useState(false);
+  const [randomOrderState, _setRandomOrderState] = useState(false);
   const [languageState, setLanguageState] = useState(languages.map((el) => el.prop));
   const [backdropState, setBackdropState] = useState(false);
 
