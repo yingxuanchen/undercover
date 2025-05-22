@@ -12,9 +12,6 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  FormHelperText,
-  RadioGroup,
-  Radio,
   Stack,
   Divider,
   Chip,
@@ -24,7 +21,7 @@ import {
 import RoomInfo from "../components/RoomInfo";
 import { io } from "socket.io-client";
 import type { User } from "../shared/types";
-import { backendUrl, getCurrentTurnUser, getMinMaxAntiBlank, getUserString } from "../shared/utils";
+import { backendUrl, getCurrentTurnUser, getMinMaxAntiBlank } from "../shared/utils";
 import UserList from "../components/UserList";
 import fetcher from "../shared/fetcher";
 import FlippingWordCard from "../components/FlippingWordCard";
