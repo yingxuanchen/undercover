@@ -1,42 +1,38 @@
-name: Build Frontend and Deploy Backend
+name: Build and Deploy
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: "22"
 
-      - name: Install frontend deps and build
-        working-directory: frontend
+      - name: Install dependencies
         run: |
-          npm ci
-          npm run build
+          npm install --prefix frontend
+          npm install --prefix backend
 
-      - name: Copy frontend build into backend
+      - name: Build frontend
+        run: npm run build --prefix frontend
+
+      - name: Copy frontend build to backend
         run: |
           rm -rf backend/public
-          mkdir -p backend/public
-          cp -r frontend/dist/* backend/public/
+          cp -r frontend/dist backend/public
 
-      - name: Commit updated backend build to deploy branch
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git checkout -B render-deploy
-          git add backend/public
-          git commit -m "Deploy: update backend with latest frontend build" || echo "No changes to commit"
-          git push origin render-deploy --force
-
-      - name: Trigger Render Deploy Hook
+      - name: Trigger Render deploy
         run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
