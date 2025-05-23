@@ -44,8 +44,8 @@ export const checkSession = (req, res, next) => {
 };
 
 export const enterRoom = (req, res, next) => {
-  const roomId = req.body.roomId;
-  const username = req.body.username;
+  const roomId = req.body.roomId.trim();
+  const username = req.body.username.trim();
 
   Room.findByRoomId(roomId)
     .then((room) => {
