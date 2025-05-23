@@ -5,7 +5,9 @@ import { initIO } from "./util/socket.js";
 import connectMongoDBSession from "connect-mongodb-session";
 import compression from "compression";
 import session from "express-session";
-import cors from "cors";
+import gameRoutes from "./routes/game.js";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 const httpServer = createServer(app);
@@ -13,20 +15,6 @@ const httpServer = createServer(app);
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-export const allowedOrigins = ["http://localhost:5173", "https://yingxuanchen.github.io"];
-
-app.use(
-  cors({
-    credentials: true,
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like curl or Postman)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("Not allowed by CORS"));
-    },
-  })
-);
 
 const oneDay = 24 * 60 * 60 * 1000;
 
@@ -52,8 +40,16 @@ app.use(
   })
 );
 
-import gameRoutes from "./routes/game.js";
 app.use("/api", gameRoutes);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/*splat", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 await connectDB();
 

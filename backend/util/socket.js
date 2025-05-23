@@ -1,15 +1,9 @@
 import { Server } from "socket.io";
-import { allowedOrigins } from "../index.js";
 
 let io;
 
 export function initIO(httpServer) {
-  io = new Server(httpServer, {
-    cors: {
-      credentials: true,
-      origin: allowedOrigins,
-    },
-  });
+  io = new Server(httpServer);
   return io;
 }
 

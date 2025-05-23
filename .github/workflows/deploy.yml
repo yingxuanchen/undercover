@@ -9,30 +9,58 @@ permissions:
   contents: write
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: "22"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm install --prefix frontend
+          npm install --prefix backend
 
-      - name: Build
-        run: npm run build
+      - name: Build frontend
+        run: npm run build --prefix frontend
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: frontend/dist
-          publish_branch: gh-pages
+      - name: Copy frontend to backend
+        run: |
+          rm -rf backend/public
+          cp -r frontend/dist backend/public
+
+      - name: Deploy to Render (optional)
+        run: echo "Let Render auto-deploy from GitHub"
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: frontend
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: "22"
+
+  #     - name: Install dependencies
+  #       run: npm ci
+
+  #     - name: Build
+  #       run: npm run build
+
+  #     - name: Deploy to GitHub Pages
+  #       uses: peaceiris/actions-gh-pages@v4
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         publish_dir: frontend/dist
+  #         publish_branch: gh-pages
