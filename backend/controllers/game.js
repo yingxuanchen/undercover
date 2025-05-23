@@ -158,6 +158,8 @@ export const kickUser = (req, res, next) => {
 };
 
 export const getRoom = (req, res, next) => {
+  console.log("inside getRoom Api");
+  console.log(`req.session: ${JSON.stringify(req.session)}`);
   const roomId = req.session.roomId;
   const username = req.session.username;
 
