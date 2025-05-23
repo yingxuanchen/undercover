@@ -2,6 +2,8 @@ import { Room } from "../models/room.js";
 import { Card } from "../models/card.js";
 import { getIO } from "../util/socket.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const checkServiceStatus = (req, res, next) => {
   console.log("Service is running");
   res.status(200).json({ message: "Service is running" });
@@ -19,12 +21,20 @@ export const checkSession = (req, res, next) => {
     .then((room) => {
       if (!room) {
         return req.session.destroy((err) => {
+          res.clearCookie("connect.sid", {
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+          });
           res.sendStatus(200);
         });
       }
       const user = room.users.find((user) => user.name === username);
       if (!user) {
         return req.session.destroy((err) => {
+          res.clearCookie("connect.sid", {
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+          });
           res.sendStatus(200);
         });
       }
@@ -45,13 +55,13 @@ export const enterRoom = (req, res, next) => {
       }
 
       if (room.hasStarted) {
-        res.status(403).json({ error: "game has started" });
+        res.status(400).json({ error: "game has started" });
         return null;
       }
 
       const usernames = room.users.map((user) => user.name);
       if (usernames.includes(username)) {
-        res.status(403).json({ error: "username already exists" });
+        res.status(400).json({ error: "username already exists" });
         return null;
       }
 
@@ -103,8 +113,45 @@ export const leaveRoom = (req, res, next) => {
       if (room) {
         req.session.destroy((err) => {
           getIO().emit("room" + room.roomId, { action: "leaveRoom", room: room });
+          res.clearCookie("connect.sid", {
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+          });
           return res.sendStatus(200);
         });
+      }
+    })
+    .catch((err) => console.error(err));
+};
+
+export const kickUser = (req, res, next) => {
+  const roomId = req.session.roomId;
+  const username = req.session.username;
+  const userToKick = req.body.userToKick;
+
+  Room.findByRoomId(roomId)
+    .then((room) => {
+      if (!room) {
+        res.status(400).json({ error: "room does not exist" });
+        return null;
+      }
+
+      const host = room.users.find((user) => user.name === username && user.isHost);
+      if (!host) {
+        res.status(403).json({ error: "not authorized" });
+        return null;
+      }
+
+      const updatedRoom = { ...room };
+      updatedRoom.totalCount -= 1;
+      updatedRoom.users = room.users.filter((user) => user.name !== userToKick);
+
+      return Room.updateRoom(updatedRoom);
+    })
+    .then((room) => {
+      if (room) {
+        getIO().emit("room" + room.roomId, { action: "kickUser", room: room });
+        return res.sendStatus(200);
       }
     })
     .catch((err) => console.error(err));

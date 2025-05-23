@@ -6,7 +6,7 @@ export interface AlertDialogProps {
   title: string;
   message: string;
   onCancel: null | (() => void);
-  onConfirm: () => void;
+  onConfirm: (username?: string) => void;
 }
 
 export const closedDialogArgs = {
@@ -33,7 +33,7 @@ export default function AlertDialog({ open, onClose, title, message, onCancel, o
         </DialogContent>
         <DialogActions>
           {onCancel && <Button onClick={onCancel}>Cancel</Button>}
-          <Button onClick={onConfirm} autoFocus>
+          <Button onClick={() => onConfirm()} autoFocus>
             OK
           </Button>
         </DialogActions>

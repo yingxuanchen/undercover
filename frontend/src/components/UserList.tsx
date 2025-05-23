@@ -4,12 +4,17 @@ import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
 import { roles, RoleType } from "../shared/types";
 import HowToVoteIcon from "@mui/icons-material/HowToVote";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
-export default function UserList() {
+interface Props {
+  handleKickUser: (username: string) => void;
+}
+
+export default function UserList({ handleKickUser }: Props) {
   const { state: gameState } = useContext(gameStore);
-  const { room } = gameState;
+  const { room, user } = gameState;
 
-  if (!room) {
+  if (!room || !user) {
     return <>No data</>;
   }
 
@@ -20,6 +25,13 @@ export default function UserList() {
           <TableRow key={index}>
             <TableCell>{roomUser.isHost ? "👑" : ""}</TableCell>
             <TableCell>{roomUser.isOut ? <s>{roomUser.name}</s> : roomUser.name}</TableCell>
+            {!room.hasStarted && user.isHost && !roomUser.isHost && (
+              <TableCell>
+                <span style={{ display: "flex" }} onClick={() => handleKickUser(roomUser.name)}>
+                  <RemoveCircleOutlineIcon fontSize="small" color="error" />
+                </span>
+              </TableCell>
+            )}
             <TableCell>{room.currentTurn === index ? "🎙️" : ""}</TableCell>
             {room.currentTurn === "voting" && (
               <TableCell>

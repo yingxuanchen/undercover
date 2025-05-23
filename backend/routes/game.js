@@ -7,6 +7,7 @@ import {
   enterRoom,
   getRoom,
   hostVote,
+  kickUser,
   leaveGame,
   leaveRoom,
   startGame,
@@ -21,6 +22,7 @@ router.get("/check-session", checkSession);
 
 router.post("/enter-room", enterRoom);
 router.get("/leave-room", leaveRoom);
+router.post("/kick-user", kickUser);
 router.get("/room", getRoom);
 
 router.post("/start-game", startGame);

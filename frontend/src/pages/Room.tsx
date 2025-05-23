@@ -76,6 +76,8 @@ function Room() {
       const roomUser = data.room.users.find((roomUser: User) => roomUser.name === username);
       if (roomUser) {
         dispatch({ user: roomUser });
+      } else {
+        navigate("/", { replace: true });
       }
 
       if (data.userVotedOut !== undefined && data.userVotedOut !== null) {
@@ -222,6 +224,34 @@ function Room() {
 
     fetcher
       .get(`/leave-game`)
+      .then((_res) => {
+        setBackdropState(false);
+      })
+      .catch((_err) => {
+        setBackdropState(false);
+        displayErrorDialog();
+      });
+  };
+
+  const handleKickUser = (username: string) => {
+    setDialogPropsState({
+      open: true,
+      onClose: handleCloseDialog,
+      title: "Confirm Kick User?",
+      message: `${username} will be kicked out of the room.`,
+      onCancel: handleCloseDialog,
+      onConfirm: confirmKickUser.bind(null, username),
+    });
+  };
+
+  const confirmKickUser = (username: string) => {
+    setDialogPropsState({ ...closedDialogArgs });
+    setBackdropState(true);
+
+    fetcher
+      .post(`/kick-user`, {
+        userToKick: username,
+      })
       .then((_res) => {
         setBackdropState(false);
       })
@@ -495,7 +525,7 @@ function Room() {
           <Chip label={`Players`} />
         </Divider>
 
-        <UserList />
+        <UserList handleKickUser={handleKickUser} />
 
         <AlertDialog
           open={dialogPropsState.open}
