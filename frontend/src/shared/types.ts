@@ -37,5 +37,5 @@ export interface Role {
 export const roles: Record<RoleType, Role> = {
   [RoleType.norm]: { label: "Civilian", color: "green" },
   [RoleType.anti]: { label: "Undercover", color: "red" },
-  [RoleType.blank]: { label: "Blank", color: "gray" },
+  [RoleType.blank]: { label: "Blank", color: "darkgray" },
 };

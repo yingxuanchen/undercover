@@ -110,16 +110,16 @@ export const leaveRoom = (req, res, next) => {
       return Room.updateRoom(updatedRoom);
     })
     .then((room) => {
-      if (room) {
-        req.session.destroy((err) => {
+      req.session.destroy((err) => {
+        if (room) {
           getIO().emit("room" + room.roomId, { action: "leaveRoom", room: room });
-          res.clearCookie("connect.sid", {
-            secure: isProduction,
-            sameSite: isProduction ? "none" : "lax",
-          });
-          return res.sendStatus(200);
+        }
+        res.clearCookie("connect.sid", {
+          secure: isProduction,
+          sameSite: isProduction ? "none" : "lax",
         });
-      }
+        return res.sendStatus(200);
+      });
     })
     .catch((err) => console.error(err));
 };

@@ -323,6 +323,17 @@ function Room() {
       });
   };
 
+  const handleSos = () => {
+    setDialogPropsState({
+      open: true,
+      onClose: handleCloseDialog,
+      title: "Confirm clear cache and leave room?",
+      message: "Only do this if you are sure the room is not in use anymore and you are stuck on this page!",
+      onCancel: handleCloseDialog,
+      onConfirm: handleLeaveRoom,
+    });
+  };
+
   const getMessage = (): string => {
     let message = "";
 
@@ -526,6 +537,16 @@ function Room() {
         </Divider>
 
         <UserList handleKickUser={handleKickUser} />
+
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          sx={{ fontSize: "0.5rem", minWidth: "auto", position: "absolute", left: "1rem" }}
+          onClick={handleSos}
+        >
+          SOS!
+        </Button>
 
         <AlertDialog
           open={dialogPropsState.open}
