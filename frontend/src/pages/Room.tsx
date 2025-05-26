@@ -21,7 +21,7 @@ import {
 import RoomInfo from "../components/RoomInfo";
 import { io } from "socket.io-client";
 import type { User } from "../shared/types";
-import { getCurrentTurnUser, getMinMaxAntiBlank } from "../shared/utils";
+import { backendUrl, getCurrentTurnUser, getMinMaxAntiBlank } from "../shared/utils";
 import UserList from "../components/UserList";
 import fetcher from "../shared/fetcher";
 import FlippingWordCard from "../components/FlippingWordCard";
@@ -70,7 +70,7 @@ function Room() {
   };
 
   useEffect(() => {
-    const socket = io({ withCredentials: true });
+    const socket = io(backendUrl, { withCredentials: true });
     socket.on("room" + roomId, (data) => {
       dispatch({ room: data.room });
       const roomUser = data.room.users.find((roomUser: User) => roomUser.name === username);
@@ -111,7 +111,7 @@ function Room() {
       })
       .catch((_err) => {
         setBackdropState(false);
-        displayErrorDialog();
+        navigate("/", { replace: true });
       });
   }, [roomId, username, dispatch]);
 
