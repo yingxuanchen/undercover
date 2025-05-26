@@ -9,6 +9,27 @@ export const checkServiceStatus = (req, res, next) => {
   res.status(200).json({ message: "Service is running" });
 };
 
+export const destroySession = (req, res, next) => {
+  const { errorStatus, errorMessage } = req.errorResponse || {};
+
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+    }
+
+    res.clearCookie("connect.sid", {
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    });
+
+    if (errorStatus) {
+      res.status(errorStatus).json({ error: errorMessage });
+    } else {
+      res.sendStatus(200);
+    }
+  });
+};
+
 export const checkSession = (req, res, next) => {
   const roomId = req.session.roomId;
   const username = req.session.username;
@@ -20,23 +41,11 @@ export const checkSession = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((room) => {
       if (!room) {
-        return req.session.destroy((err) => {
-          res.clearCookie("connect.sid", {
-            secure: isProduction,
-            sameSite: isProduction ? "none" : "lax",
-          });
-          res.sendStatus(200);
-        });
+        return next();
       }
       const user = room.users.find((user) => user.name === username);
       if (!user) {
-        return req.session.destroy((err) => {
-          res.clearCookie("connect.sid", {
-            secure: isProduction,
-            sameSite: isProduction ? "none" : "lax",
-          });
-          res.sendStatus(200);
-        });
+        return next();
       }
       return res.status(200).json({ roomId: roomId, username: username });
     })
@@ -90,7 +99,8 @@ export const leaveRoom = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((room) => {
       if (!room) {
-        return null;
+        req.errorResponse = { errorStatus: 400, errorMessage: "room does not exist" };
+        return next();
       }
 
       if (room.users.length === 1) {
@@ -112,12 +122,8 @@ export const leaveRoom = (req, res, next) => {
       req.session.destroy((err) => {
         if (room) {
           getIO().emit("room" + room.roomId, { action: "leaveRoom", room: room });
+          next();
         }
-        res.clearCookie("connect.sid", {
-          secure: isProduction,
-          sameSite: isProduction ? "none" : "lax",
-        });
-        return res.sendStatus(200);
       });
     })
     .catch((err) => console.error(err));
@@ -131,8 +137,8 @@ export const kickUser = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((room) => {
       if (!room) {
-        res.status(400).json({ error: "room does not exist" });
-        return null;
+        req.errorResponse = { errorStatus: 400, errorMessage: "room does not exist" };
+        return next();
       }
 
       const host = room.users.find((user) => user.name === username && user.isHost);
@@ -163,9 +169,14 @@ export const getRoom = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((room) => {
       if (!room) {
-        return res.status(400).json({ error: "room does not exist" });
+        req.errorResponse = { errorStatus: 400, errorMessage: "room does not exist" };
+        return next();
       }
       const user = room.users.find((user) => user.name === username);
+      if (!user) {
+        req.errorResponse = { errorStatus: 400, errorMessage: "user does not exist in room" };
+        return next();
+      }
       return res.status(200).send({ room: room, user: user });
     })
     .catch((err) => console.error(err));
@@ -181,8 +192,8 @@ export const startGame = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((oldRoom) => {
       if (!oldRoom) {
-        res.status(400).json({ error: "room does not exist" });
-        return null;
+        req.errorResponse = { errorStatus: 400, errorMessage: "room does not exist" };
+        return next();
       }
       updatedRoom = { ...oldRoom };
       return Card.getOne(languageArray);
@@ -246,8 +257,8 @@ export const endGame = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((room) => {
       if (!room) {
-        res.status(400).json({ error: "room does not exist" });
-        return null;
+        req.errorResponse = { errorStatus: 400, errorMessage: "room does not exist" };
+        return next();
       }
       const updatedRoom = { ...room, currentTurn: "ended" };
       if (req.body.winner) {
@@ -274,8 +285,8 @@ export const leaveGame = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((room) => {
       if (!room) {
-        res.status(400).json({ error: "room does not exist" });
-        return null;
+        req.errorResponse = { errorStatus: 400, errorMessage: "room does not exist" };
+        return next();
       }
 
       const updatedRoom = { ...room, hasStarted: false };
@@ -306,7 +317,7 @@ export const endTurn = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((room) => {
       if (!room) {
-        res.status(400).json({ error: "room does not exist" });
+        req.errorResponse = { errorStatus: 400, errorMessage: "room does not exist" };
         return null;
       }
 
