@@ -1,38 +1,38 @@
-name: Build and Deploy
+# name: Build and Deploy
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "22"
+#       - name: Setup Node
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: "22"
 
-      - name: Install dependencies
-        run: |
-          npm install --prefix frontend
-          npm install --prefix backend
+#       - name: Install dependencies
+#         run: |
+#           npm install --prefix frontend
+#           npm install --prefix backend
 
-      - name: Build frontend
-        run: npm run build --prefix frontend
+#       - name: Build frontend
+#         run: npm run build --prefix frontend
 
-      - name: Copy frontend build to backend
-        run: |
-          rm -rf backend/public
-          cp -r frontend/dist backend/public
+#       - name: Copy frontend build to backend
+#         run: |
+#           rm -rf backend/public
+#           cp -r frontend/dist backend/public
 
-      - name: Trigger Render deploy
-        run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+#       - name: Trigger Render deploy
+#         run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
