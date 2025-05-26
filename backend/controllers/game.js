@@ -90,7 +90,6 @@ export const leaveRoom = (req, res, next) => {
   Room.findByRoomId(roomId)
     .then((room) => {
       if (!room) {
-        res.status(400).json({ error: "room does not exist" });
         return null;
       }
 
@@ -158,8 +157,6 @@ export const kickUser = (req, res, next) => {
 };
 
 export const getRoom = (req, res, next) => {
-  console.log("inside getRoom Api");
-  console.log(`req.session: ${JSON.stringify(req.session)}`);
   const roomId = req.session.roomId;
   const username = req.session.username;
 
