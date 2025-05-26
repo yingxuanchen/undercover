@@ -17,7 +17,11 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-export const allowedOrigins = ["http://localhost:5173", "https://yingxuanchen.github.io"];
+export const allowedOrigins = [
+  "http://localhost:5173",
+  "https://yingxuanchen.github.io",
+  "https://undercover-gwsk.onrender.com",
+];
 
 app.use(
   cors({
