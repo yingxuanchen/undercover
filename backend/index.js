@@ -8,6 +8,7 @@ import session from "express-session";
 import gameRoutes from "./routes/game.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import cors from "cors";
 
 const app = express();
 const httpServer = createServer(app);
@@ -15,6 +16,20 @@ const httpServer = createServer(app);
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+export const allowedOrigins = ["http://localhost:5173", "https://yingxuanchen.github.io"];
+
+app.use(
+  cors({
+    credentials: true,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like curl or Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+  })
+);
 
 const oneDay = 24 * 60 * 60 * 1000;
 

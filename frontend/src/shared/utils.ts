@@ -42,4 +42,4 @@ export const getMinMaxAntiBlank = (totalCount: number) => {
   };
 };
 
-export const backendUrl = import.meta.env.DEV ? "http://localhost:3000" : "https://undercover-gwsk.onrender.com";
+export const backendUrl = import.meta.env.DEV ? "http://localhost:3000" : "";

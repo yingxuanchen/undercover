@@ -1,7 +1,8 @@
 import axios from "axios";
+import { backendUrl } from "./utils";
 
 const fetcher = axios.create({
-  baseURL: `/api`,
+  baseURL: `${backendUrl}/api`,
   withCredentials: true,
 });
 
